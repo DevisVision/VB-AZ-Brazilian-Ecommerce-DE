@@ -199,35 +199,38 @@
 					"storedProcedureName": "[dbo].[vb_end_log_entry]",
 					"storedProcedureParameters": {
 						"error_dtls": {
-							"value": "",
+							"value": "@string('')",
 							"type": "String"
 						},
 						"job_id": {
-							"value": "",
+							"value": "@pipeline().parameters.p_job_id",
 							"type": "Int32"
 						},
 						"job_status": {
-							"value": "",
+							"value": "SUCCESS",
 							"type": "String"
 						},
 						"pipeline_run_id": {
-							"value": "",
+							"value": "@pipeline().parameters.p_master_run_id",
 							"type": "String"
 						},
 						"records_read": {
-							"value": "",
+							"value": "@activity('COPY_CSV_TO_LANDING').output.rowsRead",
 							"type": "Int64"
 						},
 						"records_written": {
-							"value": "",
+							"value": "@activity('COPY_CSV_TO_LANDING').output.rowsCopied",
 							"type": "Int64"
 						},
 						"source_file": {
-							"value": "",
+							"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name",
 							"type": "String"
 						},
 						"target_path": {
-							"value": "",
+							"value": {
+								"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_path",
+								"type": "Expression"
+							},
 							"type": "String"
 						}
 					}
