@@ -1,0 +1,17 @@
+{
+	"name": "PL_INGEST_CSV",
+	"properties": {
+		"parameters": {
+			"p_job_id": {
+				"type": "int"
+			},
+			"p_master_pipeline_id": {
+				"type": "string"
+			},
+			"p_master_run_id": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}
