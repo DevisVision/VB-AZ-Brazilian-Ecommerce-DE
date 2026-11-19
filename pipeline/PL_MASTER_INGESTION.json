@@ -1,0 +1,16 @@
+{
+	"name": "PL_MASTER_INGESTION",
+	"properties": {
+		"parameters": {
+			"p_run_mode": {
+				"type": "string",
+				"defaultValue": "SINGLE"
+			},
+			"p_job_id": {
+				"type": "int",
+				"defaultValue": 0
+			}
+		},
+		"annotations": []
+	}
+}
