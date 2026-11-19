@@ -3,15 +3,63 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Wait1",
-				"type": "Wait",
+				"name": "FEACH_ACTIVE_JOBS",
+				"type": "ForEach",
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
-					"waitTimeInSeconds": 1
+					"items": {
+						"value": "@pipeline().parameters.p_job_list",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "SWITCH_SOURCE_TYPE",
+							"type": "Switch",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"on": {
+									"value": "@toUpper(item().source_type)",
+									"type": "Expression"
+								},
+								"cases": [
+									{
+										"value": "CSV",
+										"activities": [
+											{
+												"name": "Execute Pipeline1",
+												"type": "ExecutePipeline",
+												"dependsOn": [],
+												"policy": {
+													"secureInput": false
+												},
+												"userProperties": [],
+												"typeProperties": {
+													"waitOnCompletion": true
+												}
+											}
+										]
+									},
+									{
+										"value": "EXCEL"
+									},
+									{
+										"value": "JSON"
+									}
+								]
+							}
+						}
+					]
 				}
 			}
 		],
+		"parameters": {
+			"p_job_list": {
+				"type": "array"
+			}
+		},
 		"annotations": []
 	}
 }
