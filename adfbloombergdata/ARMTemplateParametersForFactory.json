@@ -5,17 +5,26 @@
 		"factoryName": {
 			"value": "adfbloombergdata"
 		},
-		"LS_AZSQL_BLOOMBERG_password": {
-			"value": ""
-		},
-		"LS_ADLS_BRAZIL_SOURCE_accountKey": {
+		"LS_ADLS_BRAZIL_CURATED_accountKey": {
 			"value": ""
 		},
 		"LS_ADLS_BRAZIL_LANDING_accountKey": {
 			"value": ""
 		},
-		"LS_ADLS_BRAZIL_CURATED_accountKey": {
+		"LS_ADLS_BRAZIL_SOURCE_accountKey": {
 			"value": ""
+		},
+		"LS_AZSQL_BLOOMBERG_password": {
+			"value": ""
+		},
+		"LS_ADLS_BRAZIL_CURATED_properties_typeProperties_url": {
+			"value": "https://adlsdevbloombergcurated.dfs.core.windows.net/"
+		},
+		"LS_ADLS_BRAZIL_LANDING_properties_typeProperties_url": {
+			"value": "https://adlsdevbloomberglanding.dfs.core.windows.net/"
+		},
+		"LS_ADLS_BRAZIL_SOURCE_properties_typeProperties_url": {
+			"value": "https://adlsdevbloombergdata.dfs.core.windows.net"
 		},
 		"LS_AZSQL_BLOOMBERG_properties_typeProperties_server": {
 			"value": "vbdbbloombergserver.database.windows.net"
@@ -28,15 +37,6 @@
 		},
 		"vbbloombergSHIR_properties_typeProperties_linkedInfo_resourceId": {
 			"value": "/subscriptions/ebf9de76-97ab-4029-b09a-0e5b73edc314/resourceGroups/rg-vb-az-ecommerce-dev/providers/Microsoft.DataFactory/factories/adfvbecommercedev/integrationruntimes/SHIR-ECOMMERCE-ONPREM"
-		},
-		"LS_ADLS_BRAZIL_SOURCE_properties_typeProperties_url": {
-			"value": "https://adlsdevbloombergdata.dfs.core.windows.net"
-		},
-		"LS_ADLS_BRAZIL_LANDING_properties_typeProperties_url": {
-			"value": "https://adlsdevbloomberglanding.dfs.core.windows.net/"
-		},
-		"LS_ADLS_BRAZIL_CURATED_properties_typeProperties_url": {
-			"value": "https://adlsdevbloombergcurated.dfs.core.windows.net/"
 		}
 	}
 }

@@ -7,21 +7,33 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adfbloombergdata"
 		},
-		"LS_AZSQL_BLOOMBERG_password": {
+		"LS_ADLS_BRAZIL_CURATED_accountKey": {
 			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'LS_AZSQL_BLOOMBERG'"
-		},
-		"LS_ADLS_BRAZIL_SOURCE_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'LS_ADLS_BRAZIL_SOURCE'"
+			"metadata": "Secure string for 'accountKey' of 'LS_ADLS_BRAZIL_CURATED'"
 		},
 		"LS_ADLS_BRAZIL_LANDING_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'LS_ADLS_BRAZIL_LANDING'"
 		},
-		"LS_ADLS_BRAZIL_CURATED_accountKey": {
+		"LS_ADLS_BRAZIL_SOURCE_accountKey": {
 			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'LS_ADLS_BRAZIL_CURATED'"
+			"metadata": "Secure string for 'accountKey' of 'LS_ADLS_BRAZIL_SOURCE'"
+		},
+		"LS_AZSQL_BLOOMBERG_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_AZSQL_BLOOMBERG'"
+		},
+		"LS_ADLS_BRAZIL_CURATED_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adlsdevbloombergcurated.dfs.core.windows.net/"
+		},
+		"LS_ADLS_BRAZIL_LANDING_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adlsdevbloomberglanding.dfs.core.windows.net/"
+		},
+		"LS_ADLS_BRAZIL_SOURCE_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adlsdevbloombergdata.dfs.core.windows.net"
 		},
 		"LS_AZSQL_BLOOMBERG_properties_typeProperties_server": {
 			"type": "string",
@@ -38,18 +50,6 @@
 		"vbbloombergSHIR_properties_typeProperties_linkedInfo_resourceId": {
 			"type": "string",
 			"defaultValue": "/subscriptions/ebf9de76-97ab-4029-b09a-0e5b73edc314/resourceGroups/rg-vb-az-ecommerce-dev/providers/Microsoft.DataFactory/factories/adfvbecommercedev/integrationruntimes/SHIR-ECOMMERCE-ONPREM"
-		},
-		"LS_ADLS_BRAZIL_SOURCE_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://adlsdevbloombergdata.dfs.core.windows.net"
-		},
-		"LS_ADLS_BRAZIL_LANDING_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://adlsdevbloomberglanding.dfs.core.windows.net/"
-		},
-		"LS_ADLS_BRAZIL_CURATED_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://adlsdevbloombergcurated.dfs.core.windows.net/"
 		}
 	},
 	"variables": {
@@ -126,6 +126,146 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DS_ADLS_BRAZIL_LANDING')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ADLS_BRAZIL_LANDING",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_file_system": {
+						"type": "string"
+					},
+					"p_directory": {
+						"type": "string"
+					},
+					"p_file_name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().p_file_name",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().p_directory",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().p_file_system",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "geolocation_zip_code_prefix",
+						"type": "String"
+					},
+					{
+						"name": "geolocation_lat",
+						"type": "String"
+					},
+					{
+						"name": "geolocation_lng",
+						"type": "String"
+					},
+					{
+						"name": "geolocation_city",
+						"type": "String"
+					},
+					{
+						"name": "geolocation_state",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS_BRAZIL_LANDING')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_ADLS_BRAZIL_SOURCE')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ADLS_BRAZIL_SOURCE",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"p_file_system": {
+						"type": "string"
+					},
+					"p_directory": {
+						"type": "string"
+					},
+					"p_file_name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().p_file_name",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().p_directory",
+							"type": "Expression"
+						},
+						"fileSystem": {
+							"value": "@dataset().p_file_system",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "geolocation_zip_code_prefix",
+						"type": "String"
+					},
+					{
+						"name": "geolocation_lat",
+						"type": "String"
+					},
+					{
+						"name": "geolocation_lng",
+						"type": "String"
+					},
+					{
+						"name": "geolocation_city",
+						"type": "String"
+					},
+					{
+						"name": "geolocation_state",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ADLS_BRAZIL_SOURCE')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DS_AZSQL_BLOOMBERG')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -142,6 +282,59 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LS_AZSQL_BLOOMBERG')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ADLS_BRAZIL_CURATED')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('LS_ADLS_BRAZIL_CURATED_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('LS_ADLS_BRAZIL_CURATED_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ADLS_BRAZIL_LANDING')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Brazilian Ecommerce landing storage",
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('LS_ADLS_BRAZIL_LANDING_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('LS_ADLS_BRAZIL_LANDING_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ADLS_BRAZIL_SOURCE')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Brazilian Olist source storage",
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('LS_ADLS_BRAZIL_SOURCE_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('LS_ADLS_BRAZIL_SOURCE_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/LS_AZSQL_BLOOMBERG')]",
@@ -175,59 +368,6 @@
 					"linkedInfo": {
 						"resourceId": "[parameters('vbbloombergSHIR_properties_typeProperties_linkedInfo_resourceId')]",
 						"authorizationType": "Rbac"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LS_ADLS_BRAZIL_SOURCE')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Brazilian Olist source storage",
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('LS_ADLS_BRAZIL_SOURCE_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('LS_ADLS_BRAZIL_SOURCE_accountKey')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LS_ADLS_BRAZIL_LANDING')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "Brazilian Ecommerce landing storage",
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('LS_ADLS_BRAZIL_LANDING_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('LS_ADLS_BRAZIL_LANDING_accountKey')]"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LS_ADLS_BRAZIL_CURATED')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobFS",
-				"typeProperties": {
-					"url": "[parameters('LS_ADLS_BRAZIL_CURATED_properties_typeProperties_url')]",
-					"accountKey": {
-						"type": "SecureString",
-						"value": "[parameters('LS_ADLS_BRAZIL_CURATED_accountKey')]"
 					}
 				}
 			},

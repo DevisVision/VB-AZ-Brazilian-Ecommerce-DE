@@ -7,21 +7,33 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adfbloombergdata"
 		},
-		"LS_AZSQL_BLOOMBERG_password": {
+		"LS_ADLS_BRAZIL_CURATED_accountKey": {
 			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'LS_AZSQL_BLOOMBERG'"
-		},
-		"LS_ADLS_BRAZIL_SOURCE_accountKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'LS_ADLS_BRAZIL_SOURCE'"
+			"metadata": "Secure string for 'accountKey' of 'LS_ADLS_BRAZIL_CURATED'"
 		},
 		"LS_ADLS_BRAZIL_LANDING_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'LS_ADLS_BRAZIL_LANDING'"
 		},
-		"LS_ADLS_BRAZIL_CURATED_accountKey": {
+		"LS_ADLS_BRAZIL_SOURCE_accountKey": {
 			"type": "secureString",
-			"metadata": "Secure string for 'accountKey' of 'LS_ADLS_BRAZIL_CURATED'"
+			"metadata": "Secure string for 'accountKey' of 'LS_ADLS_BRAZIL_SOURCE'"
+		},
+		"LS_AZSQL_BLOOMBERG_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_AZSQL_BLOOMBERG'"
+		},
+		"LS_ADLS_BRAZIL_CURATED_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adlsdevbloombergcurated.dfs.core.windows.net/"
+		},
+		"LS_ADLS_BRAZIL_LANDING_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adlsdevbloomberglanding.dfs.core.windows.net/"
+		},
+		"LS_ADLS_BRAZIL_SOURCE_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adlsdevbloombergdata.dfs.core.windows.net"
 		},
 		"LS_AZSQL_BLOOMBERG_properties_typeProperties_server": {
 			"type": "string",
@@ -38,18 +50,6 @@
 		"vbbloombergSHIR_properties_typeProperties_linkedInfo_resourceId": {
 			"type": "string",
 			"defaultValue": "/subscriptions/ebf9de76-97ab-4029-b09a-0e5b73edc314/resourceGroups/rg-vb-az-ecommerce-dev/providers/Microsoft.DataFactory/factories/adfvbecommercedev/integrationruntimes/SHIR-ECOMMERCE-ONPREM"
-		},
-		"LS_ADLS_BRAZIL_SOURCE_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://adlsdevbloombergdata.dfs.core.windows.net"
-		},
-		"LS_ADLS_BRAZIL_LANDING_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://adlsdevbloomberglanding.dfs.core.windows.net/"
-		},
-		"LS_ADLS_BRAZIL_CURATED_properties_typeProperties_url": {
-			"type": "string",
-			"defaultValue": "https://adlsdevbloombergcurated.dfs.core.windows.net/"
 		},
 		"containerUri": {
 			"type": "string",
@@ -78,17 +78,26 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"LS_AZSQL_BLOOMBERG_password": {
-						"value": "[parameters('LS_AZSQL_BLOOMBERG_password')]"
-					},
-					"LS_ADLS_BRAZIL_SOURCE_accountKey": {
-						"value": "[parameters('LS_ADLS_BRAZIL_SOURCE_accountKey')]"
+					"LS_ADLS_BRAZIL_CURATED_accountKey": {
+						"value": "[parameters('LS_ADLS_BRAZIL_CURATED_accountKey')]"
 					},
 					"LS_ADLS_BRAZIL_LANDING_accountKey": {
 						"value": "[parameters('LS_ADLS_BRAZIL_LANDING_accountKey')]"
 					},
-					"LS_ADLS_BRAZIL_CURATED_accountKey": {
-						"value": "[parameters('LS_ADLS_BRAZIL_CURATED_accountKey')]"
+					"LS_ADLS_BRAZIL_SOURCE_accountKey": {
+						"value": "[parameters('LS_ADLS_BRAZIL_SOURCE_accountKey')]"
+					},
+					"LS_AZSQL_BLOOMBERG_password": {
+						"value": "[parameters('LS_AZSQL_BLOOMBERG_password')]"
+					},
+					"LS_ADLS_BRAZIL_CURATED_properties_typeProperties_url": {
+						"value": "[parameters('LS_ADLS_BRAZIL_CURATED_properties_typeProperties_url')]"
+					},
+					"LS_ADLS_BRAZIL_LANDING_properties_typeProperties_url": {
+						"value": "[parameters('LS_ADLS_BRAZIL_LANDING_properties_typeProperties_url')]"
+					},
+					"LS_ADLS_BRAZIL_SOURCE_properties_typeProperties_url": {
+						"value": "[parameters('LS_ADLS_BRAZIL_SOURCE_properties_typeProperties_url')]"
 					},
 					"LS_AZSQL_BLOOMBERG_properties_typeProperties_server": {
 						"value": "[parameters('LS_AZSQL_BLOOMBERG_properties_typeProperties_server')]"
@@ -101,15 +110,6 @@
 					},
 					"vbbloombergSHIR_properties_typeProperties_linkedInfo_resourceId": {
 						"value": "[parameters('vbbloombergSHIR_properties_typeProperties_linkedInfo_resourceId')]"
-					},
-					"LS_ADLS_BRAZIL_SOURCE_properties_typeProperties_url": {
-						"value": "[parameters('LS_ADLS_BRAZIL_SOURCE_properties_typeProperties_url')]"
-					},
-					"LS_ADLS_BRAZIL_LANDING_properties_typeProperties_url": {
-						"value": "[parameters('LS_ADLS_BRAZIL_LANDING_properties_typeProperties_url')]"
-					},
-					"LS_ADLS_BRAZIL_CURATED_properties_typeProperties_url": {
-						"value": "[parameters('LS_ADLS_BRAZIL_CURATED_properties_typeProperties_url')]"
 					}
 				}
 			},
