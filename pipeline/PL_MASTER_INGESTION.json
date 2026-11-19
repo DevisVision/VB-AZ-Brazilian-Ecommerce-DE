@@ -1,6 +1,20 @@
 {
 	"name": "PL_MASTER_INGESTION",
 	"properties": {
+		"activities": [
+			{
+				"name": "IF_CHECK_RUN_MODE",
+				"type": "IfCondition",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(\n    toUpper(pipeline().parameters.p_run_mode),\n    'SINGLE'\n)",
+						"type": "Expression"
+					}
+				}
+			}
+		],
 		"parameters": {
 			"p_run_mode": {
 				"type": "string",
