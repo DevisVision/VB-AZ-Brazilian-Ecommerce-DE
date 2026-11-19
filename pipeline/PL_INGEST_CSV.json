@@ -241,7 +241,7 @@
 				}
 			},
 			{
-				"name": "Stored procedure2",
+				"name": "SP_END_LOG_FAILED",
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
@@ -258,7 +258,48 @@
 					"secureOutput": false,
 					"secureInput": false
 				},
-				"userProperties": []
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[vb_end_log_entry]",
+					"storedProcedureParameters": {
+						"error_dtls": {
+							"value": "@string(activity('COPY_CSV_TO_LANDING').error.message)",
+							"type": "String"
+						},
+						"job_id": {
+							"value": "@pipeline().parameters.p_job_id",
+							"type": "Int32"
+						},
+						"job_status": {
+							"value": "FAILED",
+							"type": "String"
+						},
+						"pipeline_run_id": {
+							"value": "@pipeline().parameters.p_master_run_id",
+							"type": "String"
+						},
+						"records_read": {
+							"value": null,
+							"type": "Int64"
+						},
+						"records_written": {
+							"value": null,
+							"type": "Int64"
+						},
+						"source_file": {
+							"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name",
+							"type": "String"
+						},
+						"target_path": {
+							"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_path",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_AZSQL_BLOOMBERG",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"parameters": {
