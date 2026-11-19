@@ -1,0 +1,15 @@
+{
+	"name": "adfbloombergdata",
+	"properties": {
+		"trustModeClaimForMi": {
+			"value": "Disabled",
+			"editable": true
+		}
+	},
+	"location": "southindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "7fd2bb28-5fdf-4318-881c-11d1048f8252",
+		"tenantId": "3c9a95b3-9291-4ed2-9677-13948a6e69d0"
+	}
+}
