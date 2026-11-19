@@ -11,6 +11,18 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'LS_AZSQL_BLOOMBERG'"
 		},
+		"LS_ADLS_BRAZIL_SOURCE_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_ADLS_BRAZIL_SOURCE'"
+		},
+		"LS_ADLS_BRAZIL_LANDING_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_ADLS_BRAZIL_LANDING'"
+		},
+		"LS_ADLS_BRAZIL_CURATED_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_ADLS_BRAZIL_CURATED'"
+		},
 		"LS_AZSQL_BLOOMBERG_properties_typeProperties_server": {
 			"type": "string",
 			"defaultValue": "vbdbbloombergserver.database.windows.net"
@@ -26,6 +38,18 @@
 		"vbbloombergSHIR_properties_typeProperties_linkedInfo_resourceId": {
 			"type": "string",
 			"defaultValue": "/subscriptions/ebf9de76-97ab-4029-b09a-0e5b73edc314/resourceGroups/rg-vb-az-ecommerce-dev/providers/Microsoft.DataFactory/factories/adfvbecommercedev/integrationruntimes/SHIR-ECOMMERCE-ONPREM"
+		},
+		"LS_ADLS_BRAZIL_SOURCE_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adlsdevbloombergdata.dfs.core.windows.net"
+		},
+		"LS_ADLS_BRAZIL_LANDING_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adlsdevbloomberglanding.dfs.core.windows.net/"
+		},
+		"LS_ADLS_BRAZIL_CURATED_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://adlsdevbloombergcurated.dfs.core.windows.net/"
 		}
 	},
 	"variables": {
@@ -64,6 +88,59 @@
 					"linkedInfo": {
 						"resourceId": "[parameters('vbbloombergSHIR_properties_typeProperties_linkedInfo_resourceId')]",
 						"authorizationType": "Rbac"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ADLS_BRAZIL_SOURCE')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Brazilian Olist source storage",
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('LS_ADLS_BRAZIL_SOURCE_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('LS_ADLS_BRAZIL_SOURCE_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ADLS_BRAZIL_LANDING')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Brazilian Ecommerce landing storage",
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('LS_ADLS_BRAZIL_LANDING_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('LS_ADLS_BRAZIL_LANDING_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ADLS_BRAZIL_CURATED')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('LS_ADLS_BRAZIL_CURATED_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('LS_ADLS_BRAZIL_CURATED_accountKey')]"
 					}
 				}
 			},
