@@ -6,6 +6,26 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "adfbloombergdata"
+		},
+		"LS_AZSQL_BLOOMBERG_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'LS_AZSQL_BLOOMBERG'"
+		},
+		"LS_AZSQL_BLOOMBERG_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "vbdbbloombergserver.database.windows.net"
+		},
+		"LS_AZSQL_BLOOMBERG_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "vbdbbloomberg"
+		},
+		"LS_AZSQL_BLOOMBERG_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "vbadmin"
+		},
+		"vbbloombergSHIR_properties_typeProperties_linkedInfo_resourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/ebf9de76-97ab-4029-b09a-0e5b73edc314/resourceGroups/rg-vb-az-ecommerce-dev/providers/Microsoft.DataFactory/factories/adfvbecommercedev/integrationruntimes/SHIR-ECOMMERCE-ONPREM"
 		}
 	},
 	"variables": {
@@ -27,7 +47,38 @@
 							"expression": {
 								"value": "@equals(\n    toUpper(pipeline().parameters.p_run_mode),\n    'SINGLE'\n)",
 								"type": "Expression"
-							}
+							},
+							"ifTrueActivities": [
+								{
+									"name": "LKUP_SINGLE_JOB",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderQuery": {
+												"value": "@concat(\n    'EXEC dbo.vb_get_job_dtls @job_id = ',\n    string(pipeline().parameters.p_job_id)\n)",
+												"type": "Expression"
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "DS_AZSQL_BLOOMBERG",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									}
+								}
+							]
 						}
 					}
 				],
@@ -45,6 +96,63 @@
 					}
 				},
 				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_AZSQL_BLOOMBERG')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_AZSQL_BLOOMBERG')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_AZSQL_BLOOMBERG",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_AZSQL_BLOOMBERG')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_AZSQL_BLOOMBERG')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"server": "[parameters('LS_AZSQL_BLOOMBERG_properties_typeProperties_server')]",
+					"database": "[parameters('LS_AZSQL_BLOOMBERG_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": true,
+					"authenticationType": "SQL",
+					"userName": "[parameters('LS_AZSQL_BLOOMBERG_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('LS_AZSQL_BLOOMBERG_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/vbbloombergSHIR')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {
+					"linkedInfo": {
+						"resourceId": "[parameters('vbbloombergSHIR_properties_typeProperties_linkedInfo_resourceId')]",
+						"authorizationType": "Rbac"
+					}
+				}
 			},
 			"dependsOn": []
 		}

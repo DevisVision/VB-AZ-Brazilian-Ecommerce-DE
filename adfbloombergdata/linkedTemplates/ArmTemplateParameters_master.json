@@ -5,6 +5,21 @@
 		"factoryName": {
 			"value": "adfbloombergdata"
 		},
+		"LS_AZSQL_BLOOMBERG_password": {
+			"value": ""
+		},
+		"LS_AZSQL_BLOOMBERG_properties_typeProperties_server": {
+			"value": "vbdbbloombergserver.database.windows.net"
+		},
+		"LS_AZSQL_BLOOMBERG_properties_typeProperties_database": {
+			"value": "vbdbbloomberg"
+		},
+		"LS_AZSQL_BLOOMBERG_properties_typeProperties_userName": {
+			"value": "vbadmin"
+		},
+		"vbbloombergSHIR_properties_typeProperties_linkedInfo_resourceId": {
+			"value": "/subscriptions/ebf9de76-97ab-4029-b09a-0e5b73edc314/resourceGroups/rg-vb-az-ecommerce-dev/providers/Microsoft.DataFactory/factories/adfvbecommercedev/integrationruntimes/SHIR-ECOMMERCE-ONPREM"
+		},
 		"containerUri": {
 			"value": ""
 		},
