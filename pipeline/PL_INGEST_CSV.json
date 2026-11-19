@@ -175,6 +175,87 @@
 						}
 					}
 				]
+			},
+			{
+				"name": "SP_END_LOG_SUCCESS",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "COPY_CSV_TO_LANDING",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[vb_end_log_entry]",
+					"storedProcedureParameters": {
+						"error_dtls": {
+							"value": "",
+							"type": "String"
+						},
+						"job_id": {
+							"value": "",
+							"type": "Int32"
+						},
+						"job_status": {
+							"value": "",
+							"type": "String"
+						},
+						"pipeline_run_id": {
+							"value": "",
+							"type": "String"
+						},
+						"records_read": {
+							"value": "",
+							"type": "Int64"
+						},
+						"records_written": {
+							"value": "",
+							"type": "Int64"
+						},
+						"source_file": {
+							"value": "",
+							"type": "String"
+						},
+						"target_path": {
+							"value": "",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_AZSQL_BLOOMBERG",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Stored procedure2",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "COPY_CSV_TO_LANDING",
+						"dependencyConditions": [
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": []
 			}
 		],
 		"parameters": {
