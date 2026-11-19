@@ -856,6 +856,43 @@
 											"parameters": {}
 										}
 									}
+								},
+								{
+									"name": "EXEC_PL_INGEST_CSV",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "LKUP_SINGLE_JOB",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "PL_INGEST_CSV",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"p_job_id": {
+												"value": "@activity('LKUP_SINGLE_JOB').output.firstRow.job_id",
+												"type": "Expression"
+											},
+											"p_master_pipeline_id": {
+												"value": "@pipeline().Pipeline",
+												"type": "Expression"
+											},
+											"p_master_run_id": {
+												"value": "@pipeline().RunId",
+												"type": "Expression"
+											}
+										}
+									}
 								}
 							]
 						}
@@ -877,7 +914,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_AZSQL_BLOOMBERG')]"
+				"[concat(variables('factoryId'), '/datasets/DS_AZSQL_BLOOMBERG')]",
+				"[concat(variables('factoryId'), '/pipelines/PL_INGEST_CSV')]"
 			]
 		}
 	]
