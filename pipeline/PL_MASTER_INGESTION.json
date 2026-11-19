@@ -28,6 +28,7 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
+									"sqlReaderQuery": "@concat(\n    'EXEC dbo.vb_get_job_dtls @job_id = ',\n    string(pipeline().parameters.p_job_id)\n)",
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
