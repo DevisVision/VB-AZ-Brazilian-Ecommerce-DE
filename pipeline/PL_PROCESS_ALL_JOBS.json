@@ -29,7 +29,7 @@
 										"value": "CSV",
 										"activities": [
 											{
-												"name": "Execute Pipeline1",
+												"name": "EXEC_PL_INGEST_CSV",
 												"type": "ExecutePipeline",
 												"dependsOn": [],
 												"policy": {
@@ -37,7 +37,16 @@
 												},
 												"userProperties": [],
 												"typeProperties": {
-													"waitOnCompletion": true
+													"pipeline": {
+														"referenceName": "PL_INGEST_CSV",
+														"type": "PipelineReference"
+													},
+													"waitOnCompletion": true,
+													"parameters": {
+														"p_job_id": "@item().job_id",
+														"p_master_pipeline_id": "@pipeline().Pipeline",
+														"p_master_run_id": "@pipeline().RunId"
+													}
 												}
 											}
 										]
