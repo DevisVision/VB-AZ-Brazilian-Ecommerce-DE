@@ -12,6 +12,37 @@
 						"value": "@equals(\n    toUpper(pipeline().parameters.p_run_mode),\n    'SINGLE'\n)",
 						"type": "Expression"
 					},
+					"ifFalseActivities": [
+						{
+							"name": "LKUP_ALL_JOBS",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": {
+										"value": "EXEC dbo.vb_get_job_config;",
+										"type": "Expression"
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"dataset": {
+									"referenceName": "DS_AZSQL_BLOOMBERG",
+									"type": "DatasetReference"
+								},
+								"firstRowOnly": false
+							}
+						}
+					],
 					"ifTrueActivities": [
 						{
 							"name": "LKUP_SINGLE_JOB",
@@ -63,7 +94,10 @@
 								},
 								"waitOnCompletion": true,
 								"parameters": {
-									"p_job_id": "@activity('LKUP_SINGLE_JOB').output.firstRow.job_id",
+									"p_job_id": {
+										"value": "@activity('LKUP_SINGLE_JOB').output.firstRow.job_id",
+										"type": "Expression"
+									},
 									"p_master_pipeline_id": {
 										"value": "@pipeline().Pipeline",
 										"type": "Expression"
