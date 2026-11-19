@@ -101,6 +101,7 @@
 						"storeSettings": {
 							"type": "AzureBlobFSReadSettings",
 							"recursive": false,
+							"wildcardFolderPath": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path",
 							"wildcardFileName": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_pattern",
 							"enablePartitionDiscovery": false
 						},
@@ -116,7 +117,8 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"p_file_system": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_container",
-							"p_directory": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path"
+							"p_directory": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path",
+							"p_file_name": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name"
 						}
 					}
 				]
