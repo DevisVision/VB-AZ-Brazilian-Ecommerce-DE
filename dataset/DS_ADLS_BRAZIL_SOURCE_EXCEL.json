@@ -1,0 +1,31 @@
+{
+	"name": "DS_ADLS_BRAZIL_SOURCE_EXCEL",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_BRAZIL_SOURCE",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"p_file_system": {
+				"type": "string"
+			},
+			"p_directory": {
+				"type": "string"
+			},
+			"p_file_name": {
+				"type": "string"
+			},
+			"p_sheet_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation"
+			}
+		},
+		"schema": []
+	}
+}

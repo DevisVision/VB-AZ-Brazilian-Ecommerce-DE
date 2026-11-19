@@ -1,5 +1,5 @@
 {
-	"name": "DS_ADLS_BRAZIL_SOURCE",
+	"name": "DS_ADLS_BRAZIL_SOURCE_CSV",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_ADLS_BRAZIL_SOURCE",
