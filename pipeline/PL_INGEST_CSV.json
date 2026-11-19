@@ -26,6 +26,55 @@
 						"type": "DatasetReference"
 					}
 				}
+			},
+			{
+				"name": "SP_START_LOG",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "LKUP_CSV_JOB_METADATA",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[vb_start_log_entry]",
+					"storedProcedureParameters": {
+						"job_id": {
+							"value": "@pipeline().parameters.p_job_id",
+							"type": "Int32"
+						},
+						"pipeline_id": {
+							"value": "@pipeline().parameters.p_master_pipeline_id",
+							"type": "String"
+						},
+						"pipeline_run_id": {
+							"value": "@pipeline().parameters.p_master_run_id",
+							"type": "String"
+						},
+						"source_file": {
+							"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name",
+							"type": "String"
+						},
+						"target_path": {
+							"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_path",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LS_AZSQL_BLOOMBERG",
+					"type": "LinkedServiceReference"
+				}
 			}
 		],
 		"parameters": {
