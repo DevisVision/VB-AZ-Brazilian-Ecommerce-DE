@@ -75,6 +75,50 @@
 					"referenceName": "LS_AZSQL_BLOOMBERG",
 					"type": "LinkedServiceReference"
 				}
+			},
+			{
+				"name": "COPY_CSV_TO_LANDING",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "SP_START_LOG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_ADLS_BRAZIL_SOURCE_CSV",
+						"type": "DatasetReference",
+						"parameters": {
+							"p_file_system": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_container",
+							"p_directory": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path"
+						}
+					}
+				]
 			}
 		],
 		"parameters": {
