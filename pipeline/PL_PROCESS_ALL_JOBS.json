@@ -43,19 +43,50 @@
 													},
 													"waitOnCompletion": true,
 													"parameters": {
-														"p_job_id": "@item().job_id",
-														"p_master_pipeline_id": "@pipeline().Pipeline",
-														"p_master_run_id": "@pipeline().RunId"
+														"p_job_id": {
+															"value": "@item().job_id",
+															"type": "Expression"
+														},
+														"p_master_pipeline_id": {
+															"value": "@pipeline().Pipeline",
+															"type": "Expression"
+														},
+														"p_master_run_id": {
+															"value": "@pipeline().RunId",
+															"type": "Expression"
+														}
 													}
 												}
 											}
 										]
 									},
 									{
-										"value": "EXCEL"
+										"value": "EXCEL",
+										"activities": [
+											{
+												"name": "Wait1",
+												"type": "Wait",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"waitTimeInSeconds": 1
+												}
+											}
+										]
 									},
 									{
-										"value": "JSON"
+										"value": "JSON",
+										"activities": [
+											{
+												"name": "Wait2",
+												"type": "Wait",
+												"dependsOn": [],
+												"userProperties": [],
+												"typeProperties": {
+													"waitTimeInSeconds": 1
+												}
+											}
+										]
 									}
 								]
 							}
