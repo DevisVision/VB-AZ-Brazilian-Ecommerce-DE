@@ -62,7 +62,10 @@
 									"referenceName": "PL_PROCESS_ALL_JOBS",
 									"type": "PipelineReference"
 								},
-								"waitOnCompletion": true
+								"waitOnCompletion": true,
+								"parameters": {
+									"p_job_list": "@activity('LKUP_ALL_JOBS').output.value"
+								}
 							}
 						}
 					],
