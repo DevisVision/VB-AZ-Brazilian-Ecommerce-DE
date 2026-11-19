@@ -22,8 +22,24 @@
 		"annotations": [],
 		"type": "Excel",
 		"typeProperties": {
+			"sheetName": {
+				"value": "@dataset().p_sheet_name",
+				"type": "Expression"
+			},
 			"location": {
-				"type": "AzureBlobFSLocation"
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().p_file_name",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().p_directory",
+					"type": "Expression"
+				},
+				"fileSystem": {
+					"value": "@dataset().p_file_system",
+					"type": "Expression"
+				}
 			}
 		},
 		"schema": []
