@@ -100,7 +100,8 @@
 						"type": "DelimitedTextSource",
 						"storeSettings": {
 							"type": "AzureBlobFSReadSettings",
-							"recursive": true,
+							"recursive": false,
+							"wildcardFileName": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_pattern",
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
