@@ -309,7 +309,8 @@
 							"value": "@dataset().p_file_system",
 							"type": "Expression"
 						}
-					}
+					},
+					"firstRowAsHeader": true
 				},
 				"schema": []
 			},
