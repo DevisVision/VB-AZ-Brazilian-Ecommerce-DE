@@ -28,13 +28,50 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
-									"sqlReaderQuery": "@concat(\n    'EXEC dbo.vb_get_job_dtls @job_id = ',\n    string(pipeline().parameters.p_job_id)\n)",
+									"sqlReaderQuery": {
+										"value": "@concat(\n    'EXEC dbo.vb_get_job_dtls @job_id = ',\n    string(pipeline().parameters.p_job_id)\n)",
+										"type": "Expression"
+									},
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
 								"dataset": {
 									"referenceName": "DS_AZSQL_BLOOMBERG",
 									"type": "DatasetReference"
+								}
+							}
+						},
+						{
+							"name": "EXEC_PL_INGEST_CSV",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "LKUP_SINGLE_JOB",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "PL_INGEST_CSV",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"p_job_id": "@activity('LKUP_SINGLE_JOB').output.firstRow.job_id",
+									"p_master_pipeline_id": {
+										"value": "@pipeline().Pipeline",
+										"type": "Expression"
+									},
+									"p_master_run_id": {
+										"value": "@pipeline().RunId",
+										"type": "Expression"
+									}
 								}
 							}
 						}
