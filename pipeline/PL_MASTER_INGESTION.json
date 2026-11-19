@@ -64,7 +64,10 @@
 								},
 								"waitOnCompletion": true,
 								"parameters": {
-									"p_job_list": "@activity('LKUP_ALL_JOBS').output.value"
+									"p_job_list": {
+										"value": "@activity('LKUP_ALL_JOBS').output.value",
+										"type": "Expression"
+									}
 								}
 							}
 						}
