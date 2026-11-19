@@ -1,0 +1,12 @@
+{
+	"name": "vbbloombergSHIR",
+	"properties": {
+		"type": "SelfHosted",
+		"typeProperties": {
+			"linkedInfo": {
+				"resourceId": "/subscriptions/ebf9de76-97ab-4029-b09a-0e5b73edc314/resourcegroups/rg-vb-az-ecommerce-dev/providers/Microsoft.DataFactory/factories/adfvbecommercedev/integrationruntimes/SHIR-ECOMMERCE-ONPREM",
+				"authorizationType": "Rbac"
+			}
+		}
+	}
+}
