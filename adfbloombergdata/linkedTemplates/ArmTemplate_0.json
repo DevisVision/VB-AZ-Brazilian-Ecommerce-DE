@@ -992,7 +992,12 @@
 											"type": "PipelineReference"
 										},
 										"waitOnCompletion": true,
-										"parameters": {}
+										"parameters": {
+											"p_job_list": {
+												"value": "@activity('LKUP_ALL_JOBS').output.value",
+												"type": "Expression"
+											}
+										}
 									}
 								}
 							],
