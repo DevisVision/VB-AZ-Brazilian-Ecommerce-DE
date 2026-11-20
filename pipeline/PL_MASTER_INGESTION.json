@@ -158,6 +158,18 @@
 						{
 							"value": "ALL"
 						}
+					],
+					"defaultActivities": [
+						{
+							"name": "FAIL_INVALID_RUN_MODE",
+							"type": "Fail",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"message": "Invalid p_run_mode. Allowed values are SINGLE or ALL.",
+								"errorCode": "INVALID_RUN_MODE"
+							}
+						}
 					]
 				}
 			}
