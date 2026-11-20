@@ -3,145 +3,6 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "IF_CHECK_RUN_MODE",
-				"type": "IfCondition",
-				"dependsOn": [],
-				"userProperties": [],
-				"typeProperties": {
-					"expression": {
-						"value": "@equals(\n    toUpper(pipeline().parameters.p_run_mode),\n    'SINGLE'\n)",
-						"type": "Expression"
-					},
-					"ifFalseActivities": [
-						{
-							"name": "LKUP_ALL_JOBS",
-							"type": "Lookup",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "AzureSqlSource",
-									"sqlReaderQuery": {
-										"value": "EXEC dbo.vb_get_job_config;",
-										"type": "Expression"
-									},
-									"queryTimeout": "02:00:00",
-									"partitionOption": "None"
-								},
-								"dataset": {
-									"referenceName": "DS_AZSQL_BLOOMBERG",
-									"type": "DatasetReference"
-								},
-								"firstRowOnly": false
-							}
-						},
-						{
-							"name": "EXEC_PL_PROCESS_ALL_JOBS",
-							"type": "ExecutePipeline",
-							"dependsOn": [
-								{
-									"activity": "LKUP_ALL_JOBS",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"pipeline": {
-									"referenceName": "PL_PROCESS_ALL_JOBS",
-									"type": "PipelineReference"
-								},
-								"waitOnCompletion": true,
-								"parameters": {
-									"p_job_list": {
-										"value": "@activity('LKUP_ALL_JOBS').output.value",
-										"type": "Expression"
-									}
-								}
-							}
-						}
-					],
-					"ifTrueActivities": [
-						{
-							"name": "LKUP_SINGLE_JOB",
-							"type": "Lookup",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "AzureSqlSource",
-									"sqlReaderQuery": {
-										"value": "@concat(\n    'EXEC dbo.vb_get_job_dtls @job_id = ',\n    string(pipeline().parameters.p_job_id)\n)",
-										"type": "Expression"
-									},
-									"queryTimeout": "02:00:00",
-									"partitionOption": "None"
-								},
-								"dataset": {
-									"referenceName": "DS_AZSQL_BLOOMBERG",
-									"type": "DatasetReference"
-								}
-							}
-						},
-						{
-							"name": "EXEC_PL_INGEST_CSV",
-							"type": "ExecutePipeline",
-							"dependsOn": [
-								{
-									"activity": "LKUP_SINGLE_JOB",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"pipeline": {
-									"referenceName": "PL_INGEST_CSV",
-									"type": "PipelineReference"
-								},
-								"waitOnCompletion": true,
-								"parameters": {
-									"p_job_id": {
-										"value": "@activity('LKUP_SINGLE_JOB').output.firstRow.job_id",
-										"type": "Expression"
-									},
-									"p_master_pipeline_id": {
-										"value": "@pipeline().Pipeline",
-										"type": "Expression"
-									},
-									"p_master_run_id": {
-										"value": "@pipeline().RunId",
-										"type": "Expression"
-									}
-								}
-							}
-						}
-					]
-				}
-			},
-			{
 				"name": "SWITCH_RUN_MODE",
 				"type": "Switch",
 				"dependsOn": [],
@@ -156,7 +17,7 @@
 							"value": "SINGLE",
 							"activities": [
 								{
-									"name": "LKUP_SINGLE_JOB_copy1",
+									"name": "LKUP_SINGLE_JOB",
 									"type": "Lookup",
 									"dependsOn": [],
 									"policy": {
@@ -188,7 +49,7 @@
 									"type": "ExecutePipeline",
 									"dependsOn": [
 										{
-											"activity": "LKUP_SINGLE_JOB_copy1",
+											"activity": "LKUP_SINGLE_JOB",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -223,7 +84,67 @@
 							]
 						},
 						{
-							"value": "ALL"
+							"value": "ALL",
+							"activities": [
+								{
+									"name": "LKUP_ALL_JOBS",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderQuery": {
+												"value": "EXEC dbo.vb_get_job_config;",
+												"type": "Expression"
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "DS_AZSQL_BLOOMBERG",
+											"type": "DatasetReference"
+										},
+										"firstRowOnly": false
+									}
+								},
+								{
+									"name": "EXEC_PL_PROCESS_ALL_JOBS_copy1",
+									"type": "ExecutePipeline",
+									"dependsOn": [
+										{
+											"activity": "LKUP_ALL_JOBS",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"pipeline": {
+											"referenceName": "PL_PROCESS_ALL_JOBS",
+											"type": "PipelineReference"
+										},
+										"waitOnCompletion": true,
+										"parameters": {
+											"p_job_list": {
+												"value": "@activity('LKUP_ALL_JOBS').output.value",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
 						}
 					],
 					"defaultActivities": [
