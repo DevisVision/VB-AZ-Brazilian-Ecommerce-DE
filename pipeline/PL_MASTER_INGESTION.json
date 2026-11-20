@@ -151,7 +151,14 @@
 						"value": "@toUpper(trim(pipeline().parameters.p_run_mode))",
 						"type": "Expression"
 					},
-					"cases": []
+					"cases": [
+						{
+							"value": "SINGLE"
+						},
+						{
+							"value": "ALL"
+						}
+					]
 				}
 			}
 		],
