@@ -178,7 +178,14 @@
 								{
 									"name": "SP_START_LOG",
 									"type": "SqlServerStoredProcedure",
-									"dependsOn": [],
+									"dependsOn": [
+										{
+											"activity": "LKUP_CHECK_FILE_TRACKING",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
 									"policy": {
 										"timeout": "0.12:00:00",
 										"retry": 0,
@@ -213,7 +220,7 @@
 											},
 											"source_file": {
 												"value": {
-													"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name",
+													"value": "@item().name",
 													"type": "Expression"
 												},
 												"type": "String"
@@ -470,6 +477,81 @@
 									"linkedServiceName": {
 										"referenceName": "LS_AZSQL_BLOOMBERG",
 										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "LKUP_CHECK_FILE_TRACKING",
+									"type": "Lookup",
+									"dependsOn": [
+										{
+											"activity": "GET_METADATA_CURRENT_FILE",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderQuery": {
+												"value": "@concat(\n    'EXEC dbo.vb_check_file_tracking ',\n    '@job_id = ', string(pipeline().parameters.p_job_id),\n    ', @source_file_name = ''', item().name, '''',\n    ', @source_file_path = ''',\n    activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path, '''',\n    ', @file_size_bytes = ',\n    string(activity('GET_METADATA_CURRENT_FILE').output.size),\n    ', @last_modified_time = ''',\n    string(activity('GET_METADATA_CURRENT_FILE').output.lastModified), ''''\n)",
+												"type": "Expression"
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "DS_AZSQL_BLOOMBERG",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									}
+								},
+								{
+									"name": "GET_METADATA_CURRENT_FILE",
+									"type": "GetMetadata",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataset": {
+											"referenceName": "DS_ADLS_BRAZIL_SOURCE_CSV",
+											"type": "DatasetReference",
+											"parameters": {
+												"p_file_system": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_container",
+												"p_directory": {
+													"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path",
+													"type": "Expression"
+												},
+												"p_file_name": "@item().name"
+											}
+										},
+										"fieldList": [
+											"size",
+											"lastModified"
+										],
+										"storeSettings": {
+											"type": "AzureBlobFSReadSettings",
+											"recursive": true,
+											"enablePartitionDiscovery": false
+										},
+										"formatSettings": {
+											"type": "DelimitedTextReadSettings"
+										}
 									}
 								}
 							]
