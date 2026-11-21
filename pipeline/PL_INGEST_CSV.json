@@ -152,7 +152,7 @@
 									},
 									"source_file": {
 										"value": {
-											"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name",
+											"value": "@item().name",
 											"type": "Expression"
 										},
 										"type": "String"
