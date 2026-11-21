@@ -35,7 +35,7 @@
 				"type": "SqlServerStoredProcedure",
 				"dependsOn": [
 					{
-						"activity": "LKUP_CSV_JOB_METADATA",
+						"activity": "FILTER_CSV_FILES",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -332,6 +332,70 @@
 				"linkedServiceName": {
 					"referenceName": "LS_AZSQL_BLOOMBERG",
 					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "GET_METADATA_SOURCE_FILES",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "LKUP_CSV_JOB_METADATA",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "DS_ADLS_BRAZIL_SOURCE_CSV",
+						"type": "DatasetReference",
+						"parameters": {
+							"p_file_system": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_container",
+							"p_directory": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path",
+							"p_file_name": "@string('')"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "FILTER_CSV_FILES",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "GET_METADATA_SOURCE_FILES",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GET_METADATA_SOURCE_FILES').output.childItems",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@equals(item().type, 'File')",
+						"type": "Expression"
+					}
 				}
 			}
 		],
