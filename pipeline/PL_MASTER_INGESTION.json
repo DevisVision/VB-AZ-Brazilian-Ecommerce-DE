@@ -45,7 +45,7 @@
 									}
 								},
 								{
-									"name": "EXEC_PL_INGEST_CSV_copy1",
+									"name": "EXEC_PL_INGEST_CSV",
 									"type": "ExecutePipeline",
 									"dependsOn": [
 										{
@@ -116,7 +116,7 @@
 									}
 								},
 								{
-									"name": "EXEC_PL_PROCESS_ALL_JOBS_copy1",
+									"name": "EXEC_PL_PROCESS_ALL_JOBS",
 									"type": "ExecutePipeline",
 									"dependsOn": [
 										{
@@ -160,6 +160,23 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "SET_VAR_TRIGGER",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"policy": {
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "Trigger_variable",
+					"value": {
+						"value": "@if(\n    equals(pipeline().parameters.Trigger, null),\n    pipeline().TriggerName,\n    toUpper(pipeline().parameters.Trigger)\n)\n",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"parameters": {
@@ -170,6 +187,14 @@
 			"p_job_id": {
 				"type": "int",
 				"defaultValue": 0
+			},
+			"Trigger": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"Trigger_variable": {
+				"type": "String"
 			}
 		},
 		"annotations": []
