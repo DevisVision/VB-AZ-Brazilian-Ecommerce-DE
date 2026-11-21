@@ -86,14 +86,6 @@
 			}
 		],
 		"parameters": {
-			"p_run_mode": {
-				"type": "string",
-				"defaultValue": "SINGLE"
-			},
-			"p_job_id": {
-				"type": "int",
-				"defaultValue": 0
-			},
 			"Trigger": {
 				"type": "string"
 			}
