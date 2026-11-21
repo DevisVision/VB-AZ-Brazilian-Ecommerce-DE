@@ -42,7 +42,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "EXEC dbo.vb_get_job_config;",
+							"value": "@concat(\n    'EXEC dbo.vb_get_job_config @source_type = ''',\n    toUpper(replace(variables('Trigger_variable'), 'TR_', '')),\n    ''''\n)",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
