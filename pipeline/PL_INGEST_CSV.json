@@ -440,7 +440,10 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
-									"sqlReaderQuery": "@concat(\n    'EXEC dbo.vb_check_file_tracking ',\n    '@job_id = ', string(pipeline().parameters.p_job_id),\n    ', @source_file_name = ''', item().name, '''',\n    ', @source_file_path = ''',\n    activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path, '''',\n    ', @file_size_bytes = ',\n    string(activity('GET_METADATA_SOURCE_FILES').output.size),\n    ', @last_modified_time = ''',\n    string(activity('GET_METADATA_SOURCE_FILES').output.lastModified), ''''\n)",
+									"sqlReaderQuery": {
+										"value": "@concat(\n    'EXEC dbo.vb_check_file_tracking ',\n    '@job_id = ', string(pipeline().parameters.p_job_id),\n    ', @source_file_name = ''', item().name, '''',\n    ', @source_file_path = ''',\n    activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path, '''',\n    ', @file_size_bytes = ',\n    string(activity('GET_METADATA_CURRENT_FILE').output.size),\n    ', @last_modified_time = ''',\n    string(activity('GET_METADATA_CURRENT_FILE').output.lastModified), ''''\n)",
+										"type": "Expression"
+									},
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
