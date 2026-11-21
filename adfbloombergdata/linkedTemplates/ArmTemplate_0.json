@@ -484,310 +484,6 @@
 						}
 					},
 					{
-						"name": "SP_START_LOG",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "FILTER_CSV_FILES",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[vb_start_log_entry]",
-							"storedProcedureParameters": {
-								"job_id": {
-									"value": {
-										"value": "@pipeline().parameters.p_job_id",
-										"type": "Expression"
-									},
-									"type": "Int32"
-								},
-								"pipeline_id": {
-									"value": {
-										"value": "@pipeline().parameters.p_master_pipeline_id",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"pipeline_run_id": {
-									"value": {
-										"value": "@pipeline().parameters.p_master_run_id",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"source_file": {
-									"value": {
-										"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"target_path": {
-									"value": {
-										"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_path",
-										"type": "Expression"
-									},
-									"type": "String"
-								}
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "LS_AZSQL_BLOOMBERG",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "COPY_CSV_TO_LANDING",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "SP_START_LOG",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": false,
-									"wildcardFolderPath": {
-										"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path",
-										"type": "Expression"
-									},
-									"wildcardFileName": {
-										"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_pattern",
-										"type": "Expression"
-									},
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "ParquetSink",
-								"storeSettings": {
-									"type": "AzureBlobFSWriteSettings",
-									"copyBehavior": "PreserveHierarchy"
-								},
-								"formatSettings": {
-									"type": "ParquetWriteSettings"
-								}
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "DS_ADLS_BRAZIL_SOURCE_CSV",
-								"type": "DatasetReference",
-								"parameters": {
-									"p_file_system": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_container",
-									"p_directory": "@string('')",
-									"p_file_name": "@string('')"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "DS_ADLS_BRAZIL_LANDING_PARQUET",
-								"type": "DatasetReference",
-								"parameters": {
-									"p_file_system": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_container",
-									"p_directory": "@concat(     activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_path,     '/',     formatDateTime(         convertFromUtc(utcnow(),'India Standard Time'),         'yyyy/MM/dd'     ) )",
-									"p_file_name": "@concat(     replace(         activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name,         '.csv',         ''     ),     '_',     formatDateTime(         convertFromUtc(utcnow(),'India Standard Time'),         'yyyyMMdd_HHmmss'     ),     '.parquet' )"
-								}
-							}
-						]
-					},
-					{
-						"name": "SP_END_LOG_SUCCESS",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "COPY_CSV_TO_LANDING",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[vb_end_log_entry]",
-							"storedProcedureParameters": {
-								"error_dtls": {
-									"value": {
-										"value": "@string('')",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"job_id": {
-									"value": {
-										"value": "@pipeline().parameters.p_job_id",
-										"type": "Expression"
-									},
-									"type": "Int32"
-								},
-								"job_status": {
-									"value": "SUCCESS",
-									"type": "String"
-								},
-								"pipeline_run_id": {
-									"value": {
-										"value": "@pipeline().parameters.p_master_run_id",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"records_read": {
-									"value": {
-										"value": "@activity('COPY_CSV_TO_LANDING').output.rowsRead",
-										"type": "Expression"
-									},
-									"type": "Int64"
-								},
-								"records_written": {
-									"value": {
-										"value": "@activity('COPY_CSV_TO_LANDING').output.rowsCopied",
-										"type": "Expression"
-									},
-									"type": "Int64"
-								},
-								"source_file": {
-									"value": {
-										"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"target_path": {
-									"value": {
-										"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_path",
-										"type": "Expression"
-									},
-									"type": "String"
-								}
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "LS_AZSQL_BLOOMBERG",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
-						"name": "SP_END_LOG_FAILED",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [
-							{
-								"activity": "COPY_CSV_TO_LANDING",
-								"dependencyConditions": [
-									"Failed"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[vb_end_log_entry]",
-							"storedProcedureParameters": {
-								"error_dtls": {
-									"value": {
-										"value": "@string(activity('COPY_CSV_TO_LANDING').error.message)",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"job_id": {
-									"value": {
-										"value": "@pipeline().parameters.p_job_id",
-										"type": "Expression"
-									},
-									"type": "Int32"
-								},
-								"job_status": {
-									"value": "FAILED",
-									"type": "String"
-								},
-								"pipeline_run_id": {
-									"value": {
-										"value": "@pipeline().parameters.p_master_run_id",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"records_read": {
-									"value": null,
-									"type": "Int64"
-								},
-								"records_written": {
-									"value": null,
-									"type": "Int64"
-								},
-								"source_file": {
-									"value": {
-										"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name",
-										"type": "Expression"
-									},
-									"type": "String"
-								},
-								"target_path": {
-									"value": {
-										"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_path",
-										"type": "Expression"
-									},
-									"type": "String"
-								}
-							}
-						},
-						"linkedServiceName": {
-							"referenceName": "LS_AZSQL_BLOOMBERG",
-							"type": "LinkedServiceReference"
-						}
-					},
-					{
 						"name": "GET_METADATA_SOURCE_FILES",
 						"type": "GetMetadata",
 						"dependsOn": [
@@ -851,6 +547,325 @@
 								"type": "Expression"
 							}
 						}
+					},
+					{
+						"name": "FEACH_CSV_FILES",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "FILTER_CSV_FILES",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('FILTER_CSV_FILES').output.Value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "SP_START_LOG",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[vb_start_log_entry]",
+										"storedProcedureParameters": {
+											"job_id": {
+												"value": {
+													"value": "@pipeline().parameters.p_job_id",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"pipeline_id": {
+												"value": {
+													"value": "@pipeline().parameters.p_master_pipeline_id",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"pipeline_run_id": {
+												"value": {
+													"value": "@pipeline().parameters.p_master_run_id",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"source_file": {
+												"value": {
+													"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"target_path": {
+												"value": {
+													"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_path",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LS_AZSQL_BLOOMBERG",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "COPY_CSV_TO_LANDING",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "SP_START_LOG",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobFSReadSettings",
+												"recursive": false,
+												"wildcardFolderPath": {
+													"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path",
+													"type": "Expression"
+												},
+												"wildcardFileName": {
+													"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_pattern",
+													"type": "Expression"
+												},
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "ParquetSink",
+											"storeSettings": {
+												"type": "AzureBlobFSWriteSettings",
+												"copyBehavior": "PreserveHierarchy"
+											},
+											"formatSettings": {
+												"type": "ParquetWriteSettings"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_ADLS_BRAZIL_SOURCE_CSV",
+											"type": "DatasetReference",
+											"parameters": {
+												"p_file_system": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_container",
+												"p_directory": "@string('')",
+												"p_file_name": "@string('')"
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_ADLS_BRAZIL_LANDING_PARQUET",
+											"type": "DatasetReference",
+											"parameters": {
+												"p_file_system": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_container",
+												"p_directory": "@concat(     activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_path,     '/',     formatDateTime(         convertFromUtc(utcnow(),'India Standard Time'),         'yyyy/MM/dd'     ) )",
+												"p_file_name": "@concat(     replace(         activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name,         '.csv',         ''     ),     '_',     formatDateTime(         convertFromUtc(utcnow(),'India Standard Time'),         'yyyyMMdd_HHmmss'     ),     '.parquet' )"
+											}
+										}
+									]
+								},
+								{
+									"name": "SP_END_LOG_SUCCESS",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "COPY_CSV_TO_LANDING",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[vb_end_log_entry]",
+										"storedProcedureParameters": {
+											"error_dtls": {
+												"value": {
+													"value": "@string('')",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"job_id": {
+												"value": {
+													"value": "@pipeline().parameters.p_job_id",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"job_status": {
+												"value": "SUCCESS",
+												"type": "String"
+											},
+											"pipeline_run_id": {
+												"value": {
+													"value": "@pipeline().parameters.p_master_run_id",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"records_read": {
+												"value": {
+													"value": "@activity('COPY_CSV_TO_LANDING').output.rowsRead",
+													"type": "Expression"
+												},
+												"type": "Int64"
+											},
+											"records_written": {
+												"value": {
+													"value": "@activity('COPY_CSV_TO_LANDING').output.rowsCopied",
+													"type": "Expression"
+												},
+												"type": "Int64"
+											},
+											"source_file": {
+												"value": {
+													"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"target_path": {
+												"value": {
+													"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_path",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LS_AZSQL_BLOOMBERG",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "SP_END_LOG_FAILED",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "COPY_CSV_TO_LANDING",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[vb_end_log_entry]",
+										"storedProcedureParameters": {
+											"error_dtls": {
+												"value": {
+													"value": "@string(activity('COPY_CSV_TO_LANDING').error.message)",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"job_id": {
+												"value": {
+													"value": "@pipeline().parameters.p_job_id",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"job_status": {
+												"value": "FAILED",
+												"type": "String"
+											},
+											"pipeline_run_id": {
+												"value": {
+													"value": "@pipeline().parameters.p_master_run_id",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"records_read": {
+												"value": null,
+												"type": "Int64"
+											},
+											"records_written": {
+												"value": null,
+												"type": "Int64"
+											},
+											"source_file": {
+												"value": {
+													"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"target_path": {
+												"value": {
+													"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_path",
+													"type": "Expression"
+												},
+												"type": "String"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LS_AZSQL_BLOOMBERG",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
 					}
 				],
 				"policy": {
@@ -871,8 +886,8 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DS_AZSQL_BLOOMBERG')]",
-				"[concat(variables('factoryId'), '/linkedServices/LS_AZSQL_BLOOMBERG')]",
 				"[concat(variables('factoryId'), '/datasets/DS_ADLS_BRAZIL_SOURCE_CSV')]",
+				"[concat(variables('factoryId'), '/linkedServices/LS_AZSQL_BLOOMBERG')]",
 				"[concat(variables('factoryId'), '/datasets/DS_ADLS_BRAZIL_LANDING_PARQUET')]"
 			]
 		},
