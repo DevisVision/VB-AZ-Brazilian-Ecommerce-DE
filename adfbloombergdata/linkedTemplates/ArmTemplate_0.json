@@ -916,6 +916,9 @@
 				"parameters": {
 					"p_job_list": {
 						"type": "array"
+					},
+					"Trigger": {
+						"type": "string"
 					}
 				},
 				"annotations": []
@@ -931,167 +934,6 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "SWITCH_RUN_MODE",
-						"type": "Switch",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"on": {
-								"value": "@toUpper(trim(pipeline().parameters.p_run_mode))",
-								"type": "Expression"
-							},
-							"cases": [
-								{
-									"value": "SINGLE",
-									"activities": [
-										{
-											"name": "LKUP_SINGLE_JOB",
-											"type": "Lookup",
-											"dependsOn": [],
-											"policy": {
-												"timeout": "0.12:00:00",
-												"retry": 0,
-												"retryIntervalInSeconds": 30,
-												"secureOutput": false,
-												"secureInput": false
-											},
-											"userProperties": [],
-											"typeProperties": {
-												"source": {
-													"type": "AzureSqlSource",
-													"sqlReaderQuery": {
-														"value": "@concat(\n    'EXEC dbo.vb_get_job_dtls @job_id = ',\n    string(pipeline().parameters.p_job_id)\n)",
-														"type": "Expression"
-													},
-													"queryTimeout": "02:00:00",
-													"partitionOption": "None"
-												},
-												"dataset": {
-													"referenceName": "DS_AZSQL_BLOOMBERG",
-													"type": "DatasetReference",
-													"parameters": {}
-												}
-											}
-										},
-										{
-											"name": "EXEC_PL_INGEST_CSV",
-											"type": "ExecutePipeline",
-											"dependsOn": [
-												{
-													"activity": "LKUP_SINGLE_JOB",
-													"dependencyConditions": [
-														"Succeeded"
-													]
-												}
-											],
-											"policy": {
-												"secureInput": false
-											},
-											"userProperties": [],
-											"typeProperties": {
-												"pipeline": {
-													"referenceName": "PL_INGEST_CSV",
-													"type": "PipelineReference"
-												},
-												"waitOnCompletion": true,
-												"parameters": {
-													"p_job_id": {
-														"value": "@activity('LKUP_SINGLE_JOB').output.firstRow.job_id",
-														"type": "Expression"
-													},
-													"p_master_pipeline_id": {
-														"value": "@pipeline().Pipeline",
-														"type": "Expression"
-													},
-													"p_master_run_id": {
-														"value": "@pipeline().RunId",
-														"type": "Expression"
-													}
-												}
-											}
-										}
-									]
-								},
-								{
-									"value": "ALL",
-									"activities": [
-										{
-											"name": "LKUP_ALL_JOBS",
-											"type": "Lookup",
-											"dependsOn": [],
-											"policy": {
-												"timeout": "0.12:00:00",
-												"retry": 0,
-												"retryIntervalInSeconds": 30,
-												"secureOutput": false,
-												"secureInput": false
-											},
-											"userProperties": [],
-											"typeProperties": {
-												"source": {
-													"type": "AzureSqlSource",
-													"sqlReaderQuery": {
-														"value": "EXEC dbo.vb_get_job_config;",
-														"type": "Expression"
-													},
-													"queryTimeout": "02:00:00",
-													"partitionOption": "None"
-												},
-												"dataset": {
-													"referenceName": "DS_AZSQL_BLOOMBERG",
-													"type": "DatasetReference",
-													"parameters": {}
-												},
-												"firstRowOnly": false
-											}
-										},
-										{
-											"name": "EXEC_PL_PROCESS_ALL_JOBS",
-											"type": "ExecutePipeline",
-											"dependsOn": [
-												{
-													"activity": "LKUP_ALL_JOBS",
-													"dependencyConditions": [
-														"Succeeded"
-													]
-												}
-											],
-											"policy": {
-												"secureInput": false
-											},
-											"userProperties": [],
-											"typeProperties": {
-												"pipeline": {
-													"referenceName": "PL_PROCESS_ALL_JOBS",
-													"type": "PipelineReference"
-												},
-												"waitOnCompletion": true,
-												"parameters": {
-													"p_job_list": {
-														"value": "@activity('LKUP_ALL_JOBS').output.value",
-														"type": "Expression"
-													}
-												}
-											}
-										}
-									]
-								}
-							],
-							"defaultActivities": [
-								{
-									"name": "FAIL_INVALID_RUN_MODE",
-									"type": "Fail",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"message": "Invalid p_run_mode. Allowed values are SINGLE or ALL.",
-										"errorCode": "INVALID_RUN_MODE"
-									}
-								}
-							]
-						}
-					},
-					{
 						"name": "SET_VAR_TRIGGER",
 						"type": "SetVariable",
 						"dependsOn": [],
@@ -1105,6 +947,72 @@
 							"value": {
 								"value": "@if(\n    equals(pipeline().parameters.Trigger, null),\n    pipeline().TriggerName,\n    toUpper(pipeline().parameters.Trigger)\n)\n",
 								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "LKUP_ALL_JOBS",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "SET_VAR_TRIGGER",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": {
+									"value": "EXEC dbo.vb_get_job_config;",
+									"type": "Expression"
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_AZSQL_BLOOMBERG",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "EXEC_PL_PROCESS_ALL_JOBS",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "LKUP_ALL_JOBS",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "PL_PROCESS_ALL_JOBS",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"p_job_list": {
+									"value": "@activity('LKUP_ALL_JOBS').output.value",
+									"type": "Expression"
+								}
 							}
 						}
 					}
@@ -1134,7 +1042,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DS_AZSQL_BLOOMBERG')]",
-				"[concat(variables('factoryId'), '/pipelines/PL_INGEST_CSV')]",
 				"[concat(variables('factoryId'), '/pipelines/PL_PROCESS_ALL_JOBS')]"
 			]
 		}
