@@ -98,6 +98,9 @@
 		"parameters": {
 			"p_job_list": {
 				"type": "array"
+			},
+			"Trigger": {
+				"type": "string"
 			}
 		},
 		"annotations": []
