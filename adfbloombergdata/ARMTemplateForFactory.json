@@ -939,7 +939,8 @@
 						"type": "string"
 					}
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2026-11-22T14:22:40Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DS_AZSQL_BLOOMBERG')]",
@@ -1051,7 +1052,8 @@
 						"type": "String"
 					}
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2026-11-21T09:36:53Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DS_AZSQL_BLOOMBERG')]",
@@ -1165,7 +1167,8 @@
 						"type": "array"
 					}
 				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2026-11-21T09:36:51Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/PL_INGEST_CSV')]"
