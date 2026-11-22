@@ -526,8 +526,143 @@
 											"storedProcedureName": "[dbo].[vb_start_file_tracking]",
 											"storedProcedureParameters": {
 												"file_size_bytes": {
+													"value": {
+														"value": "@activity('GET_METADATA_CURRENT_FILE').output.size",
+														"type": "Expression"
+													},
+													"type": "Int64"
+												},
+												"job_id": {
+													"value": {
+														"value": "@pipeline().parameters.p_job_id",
+														"type": "Expression"
+													},
+													"type": "Int32"
+												},
+												"last_modified_time": {
+													"value": {
+														"value": "@activity('GET_METADATA_CURRENT_FILE').output.lastModified",
+														"type": "Expression"
+													},
+													"type": "DateTime"
+												},
+												"pipeline_run_id": {
+													"value": {
+														"value": "@pipeline().RunId",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"source_file_name": {
+													"value": {
+														"value": "@item().name",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"source_file_path": {
+													"value": {
+														"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path",
+														"type": "Expression"
+													},
+													"type": "String"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "LS_AZSQL_BLOOMBERG",
+											"type": "LinkedServiceReference"
+										}
+									},
+									{
+										"name": "SP_END_FILE_TRACKING_SUCCESS",
+										"type": "SqlServerStoredProcedure",
+										"dependsOn": [
+											{
+												"activity": "COPY_CSV_TO_LANDING",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"storedProcedureName": "[dbo].[vb_end_file_tracking]",
+											"storedProcedureParameters": {
+												"file_size_bytes": {
 													"value": "@activity('GET_METADATA_CURRENT_FILE').output.size",
 													"type": "Int64"
+												},
+												"file_status": {
+													"value": "SUCCESS",
+													"type": "String"
+												},
+												"job_id": {
+													"value": "@pipeline().parameters.p_job_id",
+													"type": "Int32"
+												},
+												"last_modified_time": {
+													"value": "@activity('GET_METADATA_CURRENT_FILE').output.lastModified",
+													"type": "DateTime"
+												},
+												"pipeline_run_id": {
+													"value": {
+														"value": "@pipeline().RunId",
+														"type": "Expression"
+													},
+													"type": "String"
+												},
+												"source_file_name": {
+													"value": "@item().name",
+													"type": "String"
+												},
+												"source_file_path": {
+													"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path",
+													"type": "String"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "LS_AZSQL_BLOOMBERG",
+											"type": "LinkedServiceReference"
+										}
+									},
+									{
+										"name": "SP_END_FILE_TRACKING_FAILED",
+										"type": "SqlServerStoredProcedure",
+										"dependsOn": [
+											{
+												"activity": "COPY_CSV_TO_LANDING",
+												"dependencyConditions": [
+													"Failed"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"storedProcedureName": "[dbo].[vb_end_file_tracking]",
+											"storedProcedureParameters": {
+												"file_size_bytes": {
+													"value": "@activity('GET_METADATA_CURRENT_FILE').output.size",
+													"type": "Int64"
+												},
+												"file_status": {
+													"value": "FAILED",
+													"type": "String"
 												},
 												"job_id": {
 													"value": "@pipeline().parameters.p_job_id",
