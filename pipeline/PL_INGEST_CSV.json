@@ -189,7 +189,7 @@
 							}
 						},
 						{
-							"name": "If Condition1",
+							"name": "IF_FILE_NOT_PROCESSED",
 							"type": "IfCondition",
 							"dependsOn": [
 								{
@@ -268,7 +268,7 @@
 										"type": "Copy",
 										"dependsOn": [
 											{
-												"activity": "SP_START_LOG",
+												"activity": "SP_START_FILE_TRACKING",
 												"dependencyConditions": [
 													"Succeeded"
 												]
@@ -494,6 +494,59 @@
 														"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_path",
 														"type": "Expression"
 													},
+													"type": "String"
+												}
+											}
+										},
+										"linkedServiceName": {
+											"referenceName": "LS_AZSQL_BLOOMBERG",
+											"type": "LinkedServiceReference"
+										}
+									},
+									{
+										"name": "SP_START_FILE_TRACKING",
+										"type": "SqlServerStoredProcedure",
+										"dependsOn": [
+											{
+												"activity": "SP_START_LOG",
+												"dependencyConditions": [
+													"Succeeded"
+												]
+											}
+										],
+										"policy": {
+											"timeout": "0.12:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": [],
+										"typeProperties": {
+											"storedProcedureName": "[dbo].[vb_start_file_tracking]",
+											"storedProcedureParameters": {
+												"file_size_bytes": {
+													"value": "@activity('GET_METADATA_CURRENT_FILE').output.size",
+													"type": "Int64"
+												},
+												"job_id": {
+													"value": "@pipeline().parameters.p_job_id",
+													"type": "Int32"
+												},
+												"last_modified_time": {
+													"value": "@activity('GET_METADATA_CURRENT_FILE').output.lastModified",
+													"type": "DateTime"
+												},
+												"pipeline_run_id": {
+													"value": "@pipeline().RunId",
+													"type": "String"
+												},
+												"source_file_name": {
+													"value": "@item().name",
+													"type": "String"
+												},
+												"source_file_path": {
+													"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path",
 													"type": "String"
 												}
 											}
