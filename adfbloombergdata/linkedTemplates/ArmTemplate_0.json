@@ -926,7 +926,10 @@
 														"parameters": {
 															"p_file_system": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_container",
 															"p_directory": "@concat(     activity('LKUP_CSV_JOB_METADATA').output.firstRow.target_path,     '/',     formatDateTime(         convertFromUtc(utcnow(),'India Standard Time'),         'yyyy/MM/dd'     ) )",
-															"p_file_name": "@concat(     replace(         activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name,         '.csv',         ''     ),     '_',     formatDateTime(         convertFromUtc(utcnow(),'India Standard Time'),         'yyyyMMdd_HHmmss'     ),     '.parquet' )"
+															"p_file_name": {
+																"value": "@concat(\n    substring(item().name, 0, lastIndexOf(item().name, '.')),\n    '_',\n    formatDateTime(\n        convertFromUtc(utcNow(), 'India Standard Time'),\n        'yyyyMMdd_HHmmss'\n    ),\n    '.parquet'\n)",
+																"type": "Expression"
+															}
 														}
 													}
 												]
