@@ -498,14 +498,6 @@
 														"storeSettings": {
 															"type": "AzureBlobFSReadSettings",
 															"recursive": false,
-															"wildcardFolderPath": {
-																"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path",
-																"type": "Expression"
-															},
-															"wildcardFileName": {
-																"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_pattern",
-																"type": "Expression"
-															},
 															"enablePartitionDiscovery": false
 														},
 														"formatSettings": {
@@ -538,8 +530,14 @@
 														"type": "DatasetReference",
 														"parameters": {
 															"p_file_system": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_container",
-															"p_directory": "@string('')",
-															"p_file_name": "@string('')"
+															"p_directory": {
+																"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.source_path",
+																"type": "Expression"
+															},
+															"p_file_name": {
+																"value": "@item().name",
+																"type": "Expression"
+															}
 														}
 													}
 												],
@@ -621,7 +619,7 @@
 														},
 														"source_file": {
 															"value": {
-																"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name",
+																"value": "@item().name",
 																"type": "Expression"
 															},
 															"type": "String"
@@ -697,7 +695,7 @@
 														},
 														"source_file": {
 															"value": {
-																"value": "@activity('LKUP_CSV_JOB_METADATA').output.firstRow.file_name",
+																"value": "@item().name",
 																"type": "Expression"
 															},
 															"type": "String"
