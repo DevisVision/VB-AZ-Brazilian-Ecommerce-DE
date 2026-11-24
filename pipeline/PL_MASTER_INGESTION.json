@@ -14,7 +14,7 @@
 				"typeProperties": {
 					"variableName": "Trigger_variable",
 					"value": {
-						"value": "@if(\n    equals(pipeline().parameters.Trigger, null),\n    pipeline().TriggerName,\n    toUpper(pipeline().parameters.Trigger)\n)\n",
+						"value": "@toUpper(\n    if(\n        equals(pipeline().parameters.Trigger, null),\n        pipeline().TriggerName,\n        pipeline().parameters.Trigger\n    )\n)",
 						"type": "Expression"
 					}
 				}
